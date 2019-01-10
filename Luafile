@@ -1,0 +1,8 @@
+skynet HEAD
+rock inspect
+rock moonscript
+rock lua-cjson 2.1.0-1
+rock lua-zlib
+rock lightningmdb
+rock luafilesystem
+rock lua-brotlivim

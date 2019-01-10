@@ -1,0 +1,16 @@
+root = "./skynet/" -- 根目录
+src = "./server/"
+ 
+thread = 1
+harbor = 0
+start = "main"
+bootstrap = "snlua bootstrap"
+luaservice = root.."service/?.lua;"..root.."test/?.lua;"..src.."?.lua"
+lualoader = root.."lualib/loader.lua"
+-- preload = "./src/preload.lua"
+snax =  root.."server/?.lua;"..root.."test/?.lua"
+-- snax_interface_g = "snax_g"
+cpath = root.."cservice/?.so"
+ 
+lua_path = root.."/lualib/?.lua;./bundle/share/lua/?.lua;./bundle/share/lua/?/init.lua"
+lua_cpath = root.."./luaclib/?.so;".."./bundle/lib/lua/?.so"

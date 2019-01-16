@@ -1,4 +1,16 @@
+package.path = "./server/?.lua;" .. package.path
 local skynet=require "skynet"
+local datacenter=require "skynet.datacenter"
+local cluster=require "skynet.cluster"
+
+
 skynet.start(function()
-skynet.error("Server First Test") 
+    local const =require "const.const"
+    skynet.error("Server Main Start!!!") 
+    print(const.playername)
+
+
+
+
+
 end)

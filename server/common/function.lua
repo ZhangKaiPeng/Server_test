@@ -1,4 +1,3 @@
-require "common.hotfix"
 local skynet = require "skynet"
 local cluster = require "skynet.cluster"
 local datacenter = require "skynet.datacenter"
@@ -348,5 +347,5 @@ function setup_env( ... )
     
 
 
-    
+
 end

@@ -1,0 +1,122 @@
+#!/bin/bash
+
+set -e
+[ -n "$DEBUG" ] && set -x
+
+LUABUNDLE_PROD=
+LUABUNDLE_LOCAL=.
+LUABUNDLE_SKYNET_ROOT=skynet
+LUABUNDLE_SKYNET_REPO=git://github.com/cloudwu/skynet.git
+LUABUNDLE_TREE=bundle
+LUABUNDLE_OS="$(uname)"
+
+skynet() {
+  # allow `skynet git_repo sha`
+  if [ "$#" -gt 1 ]; then
+    LUABUNDLE_SKYNET_REPO="$1"
+    shift
+  fi
+
+  if ! [ -d "$LUABUNDLE_SKYNET_ROOT" ]; then
+    git clone "$LUABUNDLE_SKYNET_REPO" "$LUABUNDLE_SKYNET_ROOT"
+  else
+    git -C "$LUABUNDLE_SKYNET_ROOT" fetch --force
+  fi
+  if git -C "$LUABUNDLE_SKYNET_ROOT" show-ref "origin/${1:-HEAD}" &> /dev/null; then
+    git -C "$LUABUNDLE_SKYNET_ROOT" checkout --force "origin/${1:-HEAD}"
+  else
+    git -C "$LUABUNDLE_SKYNET_ROOT" checkout --force "$1"
+  fi
+  # git -C "$LUABUNDLE_SKYNET_ROOT" submodule update --init --force --recursive
+
+  _skynet_build
+}
+
+rock() {
+  local rock_module="$1"
+  local local_rock_spec="$LUABUNDLE_LOCAL/$rock_module"
+  mkdir -p "$LUABUNDLE_TREE"
+  if [ -f "$local_rock_spec" ]; then
+    shift
+    luarocks install "$local_rock_spec" "$@"
+  else
+    luarocks install "$@"
+  fi
+}
+
+rock_dev() {
+  if [ -z "$LUABUNDLE_PROD" ]; then
+    rock "$@"
+  fi
+}
+
+_skynet_build() {
+  pushd "$LUABUNDLE_SKYNET_ROOT"
+  case "$LUABUNDLE_OS" in
+    Linux)
+      make linux ;;
+    Darwin)
+      make macosx ;;
+    *)
+      echo "skynet is not supported in $(uname)"
+      exit 2
+      ;;
+  esac
+  popd
+}
+
+_resolve_local() {
+  local bash_source="$1"
+  local remember_pwd="$(pwd)"
+  if [ -L "$bash_source" ]; then
+    bash_source="$(readlink "$bash_source")"
+  fi
+  cd "$(dirname "$bash_source")"
+  cd ..
+  LUABUNDLE_LOCAL="$(pwd)"
+  cd "$remember_pwd"
+}
+
+_install() {
+  eval "$(cat Luafile)"
+}
+
+_resolve_local "$0"
+if grep -q ^skynet Luafile; then
+  SKYNET_LUA_SED="s;\./skynet;$(pwd)/skynet;g"
+else
+  SKYNET_LUA_SED="s/, LUA = .*/ }/"
+fi
+
+VAR_LIBFLAG="-shared"
+if [ "$LUABUNDLE_OS" = "Darwin" ]; then
+  VAR_LIBFLAG="-bundle -undefined dynamic_lookup -all_load"
+fi
+VAR_CFLAGS=""
+if [ "$LUABUNDLE_OS" = "Linux" ]; then
+  VAR_CFLAGS="-O2 -fPIC"
+fi
+
+sed -e "s;{{LIBFLAG}};$VAR_LIBFLAG;" -e "s;{{CFLAGS}};$VAR_CFLAGS;" -e "s;\./bundle;$(pwd)/bundle;g" -e "$SKYNET_LUA_SED" "$LUABUNDLE_LOCAL/config.lua" > .luabundle.lua
+export LUAROCKS_CONFIG="$(pwd)/.luabundle.lua"
+
+case "x$1" in
+  xpath)
+    luarocks path
+    echo "export PATH=\"$(pwd)/bundle/bin:$PATH\""
+    echo "export LUAROCKS_CONFIG=\"$LUAROCKS_CONFIG\""
+    ;;
+  xupgrade)
+    git -C "$LUABUNDLE_LOCAL" pull
+    ;;
+  x|xinstall)
+    _install
+    ;;
+  x|xprod)
+    LUABUNDLE_PROD=1
+    _install
+    ;;
+  *)
+    echo "luabundle [install|path|help]"
+    ;;
+esac

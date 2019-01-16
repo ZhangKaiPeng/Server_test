@@ -1,0 +1,15 @@
+skynet="./skynet/"
+src="./server/"
+thread = 1
+harbor = 0
+start = "main"
+bootstrap = "snlua bootstrap"
+luaservice = skynet.."service/?.lua;"..src.."service/?.lua"
+lualoader = skynet.."lualib/loader.lua"
+-- preload = "./src/preload.lua"
+snax = src.."snax/?.lua"
+-- snax_interface_g = "snax_g"
+cpath = skynet.."cservice/?.so"
+
+lua_path = src.."lualib/?.lua;"..skynet.."lualib/?.lua;./bundle/share/lua/?.lua;./bundle/share/lua/?/init.lua"
+lua_cpath = skynet.."luaclib/?.so;./bundle/lib/lua/?.so"

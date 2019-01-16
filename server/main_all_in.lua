@@ -5,9 +5,9 @@ local cluster=require "skynet.cluster"
 
 
 skynet.start(function()
-    local const =require "const"
+    local const =require "server_const.const"
     skynet.error("Server Main Start!!!") 
-    print(const.playername)
+    
 
 
 

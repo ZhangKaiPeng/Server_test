@@ -8,7 +8,7 @@ local datacenter = require "skynet.datacenter"
 local cluster = require "skynet.cluster"
 local local_nodename = skynet.getenv("cluster_nodename")
 
-skynet.statr(function ()
+skynet.start(function ()
 	-- body
 	skynet.register("signin_server")
     skynet.error("signin server start")

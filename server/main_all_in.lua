@@ -11,7 +11,13 @@ setup_env()
 skynet.start(function()
     
     skynet.error("Server Main Start!!!") 
-    skynet.error(tostring(const.ITEM_TAG));
+    
+    local t = 1
+    if t == const.ITEM_TAG then 
+    	skynet.error("equal")
+    else
+        skynet.error("not equal")
+    end 
 
 
 

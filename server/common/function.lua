@@ -327,6 +327,12 @@ function chunk_split(paramString, paramLength)
     return table.concat(p, paramEnd);
 end
 
+function cluster_reset_config(config_table, ...)
+    cluster.reload(config_table)
+    datacenter.set("cluster_conifg", "address", config_table)
+end
+
+-- 安全设置全局环境~
 function safe_set_env(key, value, ...)
     if value and skynet.getenv(key) == nil then
         skynet.setenv(key, value)
@@ -335,11 +341,6 @@ function safe_set_env(key, value, ...)
             skynet.error("ENV", key, "setup faild!", key, value)
         end
     end
-end
-
-function cluster_reset_config(config_table, ...)
-    cluster.reload(config_table)
-    datacenter.set("cluster_conifg", "address", config_table)
 end
 
 -- 设置环境变量

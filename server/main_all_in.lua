@@ -12,8 +12,8 @@ skynet.start(function()
     
     skynet.error("Server Main Start!!!") 
     
-    
-
+    skynet.uniqueservice("protoloader") 
+   
 
 
 

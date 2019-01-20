@@ -1,0 +1,1331 @@
+.package {
+	type 0 : integer
+	session 1 : integer
+}
+
+# 游戏内牌属性 (通用定义数值域0为不存在值)
+.gameplay_card_profile {
+	card_id 0 : integer
+    skill_id 1 : integer
+}
+
+# 游戏内玩家信息属性
+.gameplay_player_profile {
+	player_id 0 : integer
+	hand 1 : *gameplay_card_profile
+	ex_card 2 : *gameplay_card_profile
+	enery 3 : integer
+    max_enery 4 : integer
+    max_reset_enery 5 : integer
+}
+
+.gameplay_pokemon_buff_profile {
+	.buff_damage_info {
+		damage_type 0 : integer
+		damage 1 : integer
+	}
+
+	interceptor_tag 0 : integer
+    duration 1 : integer
+    benefit 2 : boolean
+    damage 3 : integer
+    damage_type 4 : integer
+    heal 5 : integer
+    dmg_modify_list 6 : *buff_damage_info
+    cost_modify 7 : integer
+    maxhp_increase 8 : integer
+    heal_increase 9 : integer
+    heal_decrease 10 : integer
+    armor_modify_list 11 : *buff_damage_info
+    interceptor_id 12 : integer
+}
+
+.gameplay_pokemon_skill_profile {
+	.skill_damage_info {
+		damage_type 0 : integer
+		damage 1 : integer
+	}
+
+	skill_id 0 : integer                             
+    skill_tag 1 : integer
+    skill_type 2 : integer
+    pokemon_id 3 : integer
+    skill_rarity 4 : integer
+    skill_energy_cost 5 : integer
+
+    skill_dmg_list 6 : *skill_damage_info	#伤害列表
+    skill_heal 7 : integer					#技能治疗值
+    skill_recover 8 : integer
+    skill_dmg_modify 9 : *skill_damage_info
+    skill_cost_modify 10 : integer
+    skill_max_hp_modify 11 : integer
+    skill_heal_modify 12 : integer
+    skill_armor_modify 13 : integer
+    skill_extra_damage_list 14 : *skill_damage_info
+    skill_kill_hp 15 : integer
+    skill_dmg_modify_per_status 16 : *skill_damage_info
+    skill_sputtering_dmg_list 17 : *skill_damage_info
+    skill_random_dmg_min 18 : *skill_damage_info
+    skill_random_dmg_max 19 : *skill_damage_info
+}
+
+.gameplay_pokemon_profile {
+	pokemon_id 0 : integer
+    pokemon_tag 1 : integer
+    pokemon_hp 2 : integer
+    pokemon_max_hp 3 : integer
+    pokemon_owner 4 : integer
+    pokemon_sp 5 : integer
+    pokemon_max_sp 6 : integer
+    pokemon_skill 7 : *gameplay_pokemon_skill_profile
+    death 8 : boolean
+    pokemon_buff 9: *gameplay_pokemon_buff_profile
+    pokemon_awake 10 : integer #觉醒等级
+    pokemon_rank 11 : integer #进化等级
+}
+
+# 有效操作列表
+# 每一套操作所需要的数据内容不同，这个是一个综合数据结构，根据不同的操作需要访问不同的数据域
+.gameplay_avilable_action {
+	# 牌的目标数据集合
+	.target_for_card {
+		skill_tag 0 : integer						# 牌TAG, TAG定义参考pokemoncore/card/card.lua
+        avilable_target 1 : *integer			# 该牌在使用时可以指定的牌目标列表（精灵ID)
+	}
+
+	action 0 : integer								# 允许操作操作 较多，具体参考pokemoncore/core_define.lua中的定义
+    avilable_card 1 : *integer						# 操作可以针对的牌列表
+    avilable_target_for_card 2 : *target_for_card 	# 操作牌时需要给牌指定的目标列表
+}
+
+.gameplay_generic_param {
+	key 0 : string
+	value 1 : string
+}
+
+.gameplay_field_effect {
+	field_effect_tag 0 : string
+    field_card_tag 1 : integer
+    field_side_id 2 : integer
+    field_row 3 : integer
+}
+
+.relation_friend_req_info {
+	player_id 0 : integer
+    player_name 1 : string
+    status_start_time 3 : integer
+    game_exp 4 : integer
+    vip 5 : integer
+}
+
+.card_num_list_info {
+	card_tag 0 : integer
+	num 1 : integer
+}
+
+.system_card_set {
+	card_set_id 0 : integer
+    leader 1 : *card_num_list_info
+    other 2 : *card_num_list_info
+    default_leader 3 : integer
+    card_set_name 4 : string
+    card_set_avilable 5 : boolean #卡组是否合法
+}
+
+.card_package_num_info {
+	package_type 0 : integer # 参考const/card_random_weight.lua中卡包类型标识
+	num 1 : integer
+}
+
+.system_item_info {
+	item_tag 0 : integer
+	num 1 : integer
+	outdate 2 : integer
+}
+
+.item_info {
+	item_tag 0 : integer
+	item_count 1 : integer
+}
+
+.awake_quest_info {
+	quest_tag 0 : integer
+	quest_item_progress 1 : *integer
+	quest_reward 2 : *item_info
+	quest_id 3 : integer
+}
+
+.achievement_info {
+	achievement_tag 0 : integer
+	current_process 1 : integer
+	complete 2 : boolean
+    current_difficulty 3 : integer
+}
+
+.research_solt_info {
+	solt_index 0 : integer
+    poke_ball_tag 1 : integer
+    poke_ball_rank 2 : integer
+    research_finish_time 3 : integer
+}
+
+.daily_mission_info {
+	progress 0 : integer
+	total_progress 1 : integer
+	daily_mission_id 2 : integer
+	reward 3 : *item_info 
+	daily_mission_tag 4 : integer
+	earn 5 : boolean
+}
+
+.adventure_proportion {
+	proportion 0 : integer #奖励倍率
+	remain 1 : integer #剩余次数
+}
+
+.active_task_info {
+	active_task_tag 0 : integer
+	progress 1 : integer #进度
+	goal 2 : integer # 目标进度
+	available_day 3 : integer # 有效天
+	reward_item 4 : *item_info
+	complete 5 : boolean
+}
+
+# s2c tag从1000起
+# 心跳包
+heartbeat 1001 {}
+
+# 系统错误
+system_error 1002 {
+	request {
+		error_code 0 : integer
+	}
+}
+
+# 更新玩家个人信息(该协议仅启动通知一次)
+system_notify_player_base_info 1003 {
+	request {
+		.pokemon_skill_info {
+        	skill_tag 0 : integer #精灵技能
+        	skill_level 1 : integer #技能等级
+        	skill_max_level 2 : integer #精灵最大等级
+		}
+
+		.equipment_info {
+			equip_tag 0 : integer
+            num 1 : integer
+            level 2 : integer
+            index 3 : integer #位置索引
+		}
+
+		.pokemon_info {
+			pokemon_tag 0 : integer
+        	pokemon_level 1 : integer
+        	pokemon_strength 2 : integer
+        	pokemon_rank 3 : integer
+        	pokemon_awake 4 : integer
+        	skill_info 5 : *pokemon_skill_info
+			pokemon_equipment 6 : *equipment_info
+			pokemon_awake_score 7 : integer
+		}
+
+		.adventure_event_info {
+			event_tag 0 : integer #事件类型
+			finish 1 : boolean #完成状态
+			event_id 2 : integer #事件ID
+			event_position 3 : string #位置标识
+			event_patrol 4 : string #巡逻路径标识
+			event_type 5 : integer #事件类型
+		}
+
+
+		.adventure_power_reward {
+			reward_id 0 : integer #奖励ID
+			reward_tag 1 : integer #奖励类型标识TAG
+			earn 2 : boolean #当前领取状态
+		}
+
+		.adventure_position_info {
+			x 0 : string
+			y 1 : string
+			z 2 : string
+		}
+
+		.adventure_transport_info {
+			transport_tag 0 : string #传送门标识
+			active 1 : boolean
+		}
+
+		.adventure_mission_info {
+			mission_tag 0 : string # 任务标识
+			mission_progress 1 : integer # 进度
+			mission_goal 2 : integer #目标
+		}
+
+		.player_item_info {
+			item_tag 0 : integer
+			num 1 : integer
+			outdate 2 : integer
+		}
+
+		.item_buff_info {
+			buff_tag 0 : integer # buff tag
+			item_tag 1 : integer # buff 影响的道具
+			factor 2 : string # 影响系数
+			addtion 3 : integer # 附加值
+			time 4 : integer # 过期时间
+			item_type 5 : integer # buff 影响的道具类型
+		}
+
+		.board_quest_info {
+			.reward_slot_info {
+			 	reward_num 0 : integer
+			}
+
+			quest_id 0 : integer
+			quest_tag 1 : integer
+			quest_complete_time 2 : integer #完成时刻的时间戳
+			quest_pokemon_tag 3 : *integer
+			reward_slot 4 : *reward_slot_info
+			quest_name 5 : string
+		}
+
+		.mission_recode_info {
+			level_tag 0 : integer
+			complete_rank 1 : integer
+			earn_clear_reward 2 : boolean
+			earn_perfect_reward 3 : boolean
+			earn_normal_reward 4 : boolean
+		}
+
+		.beginner_recode_info {
+			beginner_tag 0 : integer
+			complete_rank 1 : integer
+			earn_clear_reward 2 : boolean
+		}
+
+		.daily_active_reward_info {
+			active 0 : integer #所需活跃度
+			active_reward_id 1 : integer
+			reward 2 : *item_info
+			earn 3 : boolean
+		}
+
+		.payment_count_info {
+			payment_id 0 : integer
+			count 1 : integer
+		}
+
+		.player_base_info {
+			name 0 : string
+        	player_id 1 : integer
+        	copper 2 : integer #铜币
+        	gold 3 : integer #金币
+        	last_sign_time 4 : integer #上次签到时间戳
+        	continue_sign_reward 5 : integer #连续签到次数
+        	vip 6 : integer #VIP等级
+        	pokeball_key_fragment 7 : integer #钥匙碎片
+        	pokemon_list 8 : *pokemon_info #精灵列表
+        	matchmaking_normal_rank 9 : integer #冒险点数
+        	adventure_event_list 10: *adventure_event_info #事件列表
+        	adventure_map_tag 11 : integer #当前地图类型
+        	adventure_map_id 12 : integer #地图ID (-1表示无效)
+        	adventure_random_reward 13 : integer  #随机奖励总数
+        	adventure_current_random_reward 14 : integer #当前已领取的奖励总数
+        	adventure_score 15 : integer #当前冒险模式奖励分数
+        	adventure_finial_reward_num 16 : integer #最终奖励总数
+        	adventure_current_finial_reward_num 17 : integer #当前已经获得的最终奖励数量
+        	adventure_strength 18 : integer #当前精力
+        	adventure_max_strength 19 : integer #当前总精力
+        	adventure_power 20 : integer #当前能量
+
+
+        	matchmaking_earn_season_reward 21 : boolean #上一次赛季奖励领取状态
+        	last_matchmaking_total_score 22 : integer #上一次赛季总分
+        	#商店
+        	shop_pokeball_buy_count 23 : integer #商店普通精灵球购买次数
+        	shop_pokemon_random_tag 24 : integer #商店轮转精灵球TAG
+
+        	item_box 25 : *player_item_info #玩家道具表
+        	game_exp 26 : integer #玩家经验
+        	item_buff 27 : *item_buff_info #玩家BUFF（道具获得BUFF）
+        	pokemon_awake_quest 28 : *awake_quest_info
+        	adventure_transport 29 : *adventure_transport_info
+        	adventure_mission 30 : *adventure_mission_info
+        	board_quest_list 31 : *board_quest_info
+        	last_free_quest_refrash_time 32 : integer
+        	max_process_quest_num 33 : integer
+        	buy_increase_quest_num 34 : integer #现在购买的队伍增加次数
+        	equipment_box 35 : *equipment_info
+        	player_skin_tag 36 : integer #玩家
+        	adventure_matched_count 37 : integer 
+        	adventure_matched_win_count 38 : integer
+        	adventure_total_score 39 : integer
+        	adventure_prefet_count 40 : integer
+        	adventure_total_defeat 41 : integer
+        	mission_recode 42 : *mission_recode_info # 单人模式记录（仅有已结算的）
+        	mission_legue_badge 43 : *integer	
+        	mission_legue_info 44 : *integer
+        	train_double_reward_pokemon 45 : *integer 		#双倍精灵
+        	train_double_reward_pokemon_num 46 : integer	#双倍精灵数
+        	train_remain_count 47 : integer					#特训剩余次数
+        	train_max_remain_count 48 : integer				#特训最大次数
+        	train_complete_tag 49 : *integer				#当天已完成的特训精灵
+        	train_last_refrash_time 50 : integer			#上次特训刷新时间戳
+        	train_pool_tag 51 : integer						#随机池标志
+        	practice_complete_cache 52 : *integer			#已完成的训练关
+        	task_achievement_list 53 : *achievement_info	#成就信息
+        	player_research_solt 54 : *research_solt_info   #研究槽位
+        	enable_research_queue 55 : boolean				#是否开启队列
+        	adventure_trie_travel_active 56 : boolean		#当前冒险地图顺序谜题是否激活
+        	research_direct_earn_count 57 : integer			#当前研究直接领取次数
+        	beginner_level_recode 58 : *beginner_recode_info #新手训练营数据
+        	daily_mission_active_reward 59 : *daily_active_reward_info #每日活跃度奖励
+        	daily_mission_list 60 : *daily_mission_info #每日任务
+        	daily_mission_active 61 : integer #活跃度
+        	task_achievement_score 62 : integer #成就积分
+        	rewarded_achievement_score 63 : integer #已发放的成就奖励积分
+
+        	guide_enable 64 : boolean
+        	guide_all_finished 65 : boolean
+        	guide_current_index 66 : integer
+        	guide_battle_level 67 : integer
+
+        	adventure_season_metched_count 68 : integer #赛季总匹配次数
+        	adventure_season_metched_win_count 69 : integer #赛季总胜利次数
+        	daily_remain_shop_num 70 : integer #剩余商店积分领取次数
+        	matchmaking_shop_score 71 : integer #商店分数
+        	daily_adventure_proportion_list 72 : *adventure_proportion #每日奖励倍率
+        	matchmaking_continue_win 73 : integer #连胜次数
+        	matchmaking_continue_lost 74 : integer #连输次数
+        	matchmaking_total_score 75 : integer #赛季总分
+        	daily_adventure_proportion_remain_buy_count 76 : integer
+        	daily_first_win_reward_status 77 : integer #每日首胜奖励状态: 0:无效 1:未领取 2:可领取 3:已领取
+        	vip_end_time 78 : integer #VIP到期时间
+        	first_payment 79 : boolean #首充标志
+
+        	payment_count 80 : *payment_count_info
+        	daily_payment_count 81 : *payment_count_info
+        	week_payment_count 82 : *payment_count_info
+
+        	matchmaking_shop_auto_refresh_time 83 : integer #竞技场商店刷新时间
+        	active_task_list 84 :  *active_task_info
+        	profile_create_time 85 : integer #建号时间
+
+        	game_fund_available 86 : boolean #游戏基金是否开启
+        	game_fund_buying_deathline 87 : integer #基金购买deathline
+        	game_fund_earned_list 88 : *integer #已经领取基金的等级
+
+        	first_payment_pokemon_reward_available 89 : integer #首充送精灵有效状态(0: 未支付, 1:可领取, 2:已领取)
+		}
+
+		base_info 0 : player_base_info
+	}
+}
+
+# 更新玩家个人邮箱
+system_notify_player_mail_box 1004 {
+	request {
+		.mail_item {
+			mail_id 0 : integer
+            recv_time 1 : integer
+            mail_read 2 : boolean
+            mail_title 3 : string
+            mail_content 4 : string
+            mail_sender 5 : string
+            mail_reward_item 6 : *system_item_info
+		}
+
+		mail_box 0 : *mail_item
+	}
+}
+
+# 通知旧卡池状态
+system_notify_last_card_reward_pool 1005 {
+	request {
+		.last_card_info {
+			card_tag 0 : integer
+			earn 1 : boolean
+		}
+		daily_card_reward_pool 0 : *last_card_info
+	}
+}
+
+# 更新玩家名字
+system_require_player_name 1006 {}
+
+# 通知VIP奖励领取
+system_notify_vip_daily_reward 1007 {}
+
+# 通知玩家有效支付
+system_notify_player_avilable_payment 1008 {
+	request {
+		.payment_produce_id {
+			channel 0 : string
+			produce_id 1 : string
+		}
+
+		.payment_info {
+			payment_id 0 : integer
+			fee 1 : string
+			produce_id 2 : *payment_produce_id
+			icon_id 3 : string
+			avilable_channel 4 : *string
+			avilable_platform 5 : *string
+			avilable_client_channel 6 : *string
+			subject 7 : string
+			body 8 : string
+			max_count 9 : integer # 玩家购买限制
+			payment_reward 10 : *item_info
+			payment_type 11 : integer #支付类型 参考const/payment_type.lua
+			available_start_time 12 : integer # 限制开始时间, -1表示无限制
+			available_end_time 13 : integer # 限制结束时间, -1表示无限制
+			week_max_buy_count 14 : integer # 周购买限制
+			daily_max_buy_count 15 : integer # 每天购买限制
+			discount 16 : integer #当前折扣
+			member_feature_reward 17 : *integer #购买的会员功能编号
+			timelimit_from_create 18 : integer #从建号起的限制有效秒数
+		}
+
+		available_payment 0 : *payment_info
+	}
+}
+
+# 通知玩家有效活动
+system_notify_active_event_list 1009 {
+	request {
+		.event_reward_info {
+			.reward_info {
+				item_reward 0 : *system_item_info
+				card_reward 1 : *card_num_list_info
+			}
+
+			.reward_cost {
+				item_tag 0 : integer
+				count 1 : integer
+			}
+
+			reward_id 0 : integer
+			checkpoint 1 : string
+			auto_reward 2 : boolean
+			reward_count 3 : integer
+			reward_list 4 : reward_info
+			cost 5 : reward_cost
+			progress 6 : integer
+			progress_max 7 : integer
+			start_time 8 : integer
+			end_time 9 : integer
+			jump_target 10 : boolean
+			ignore_time 11 : boolean
+		}
+
+		.active_event_info {
+			event_id 0 : integer
+			title_key 1 : string
+			desc_key 2 : string
+			active_event_reward 3 : *event_reward_info
+			start_time 4 : integer
+			end_time 5 : integer
+			status 6 : integer
+			enable 7 : boolean
+			weight 8 : integer
+		}
+
+		active_event_list 0 : *active_event_info
+	}
+}
+
+# 通知玩家验证URL
+system_notify_player_evaluate_url 1010 {
+	request {
+		iOS 0 : string
+		Android 1 : string
+	}
+}
+
+system_notify_payment_reward 1011 {
+	request {
+		payment_reward 0 : *system_item_info
+	}
+}
+
+# 游戏内协议 (1201-1300)
+# 通知游戏开始
+gameplay_startup 1201 {
+	request {
+		.addtion_pokemon_info {
+			pokemon_tag 0 : integer
+			pokemon_rank 1 : integer
+			pokemon_power 2 : integer #战斗力
+			pokemon_awake 3 : integer #觉醒等级
+		}
+
+		.startup_addtion_info {
+			pokemon_list 0 : *addtion_pokemon_info
+            player_id 1 : integer #对应玩家
+            player_name 2 : string #对应玩家名字
+            matchmaking_rank 3 : integer # 竞技场等级
+            vip 4 : integer # VIP等级
+            player_level 5 : integer #玩家等级
+            guild_name 6 : string #公会名字
+            icon_id 7 : integer #头像ID
+            area_id 8 : integer #场地ID
+		}
+
+		profile_list 0 : *gameplay_player_profile
+		in_battle 1 : boolean
+		timeout 2 : integer
+		start_time 3 : integer
+		game_mode 4 : integer # 游戏模式，参考code_define.lua
+		addtion_info 5 : *startup_addtion_info
+		player_id 6 : integer #开始游戏的玩家ID
+	}
+}
+
+# 通知确认初始手牌
+gameplay_require_confirm_init_card 1202 {
+	request {
+		timeout 0 : integer
+		player_id 1 : integer
+		select_count 2 : integer
+		start_click 3 : integer
+		max_count 4 : integer
+	}
+}
+
+# 通知选择领袖
+gameplay_require_select_leader 1203 {
+	request {
+		timeout 0 : integer
+		player_id 1 : integer
+		leader_sproto_card 2 : *gameplay_card_profile
+		start_click 3 : integer
+	}
+}
+
+# 上一步操作完成
+gameplay_finish_operation 1204 {
+	request {
+		player_id 0 : integer
+	}
+}
+
+# 通知standby状态
+gameplay_standby_complete 1205 {
+	request {
+		player_list 0 : *integer
+	}
+}
+
+# 更新玩家游戏内状态
+gameplay_update_profile 1206 {
+	request {
+		profile 0 : *gameplay_player_profile
+	}
+}
+
+# 游戏进入空闲时机点
+gameplay_enter_idle 1207 {
+	request {
+
+		timeout 0 : integer 
+		player_id 1 : integer
+		reset_timer 2 : boolean
+		start_click 3 : integer
+		avilable_action 4 : *gameplay_avilable_action
+	}
+}
+
+# 通知自动passed
+gameplay_notify_autopassed 1208 {
+	request {
+		player_id 0 : integer
+	}
+}
+
+# 通知游戏开始
+gameplay_log_gamestart 1209 {}
+
+# 更新游戏内处理区
+gamplay_update_process_area 1210 {
+	request {
+		.process_area_info {
+			player_id 0 : integer
+			pokemon_list 1 : *gameplay_pokemon_profile
+		}
+		process_area 0 : *process_area_info
+	}
+}
+
+# 游戏内响应事件
+gameplay_response_to_event 1211 {
+	request {
+		timeout 0 : integer
+		player_id 1 : integer
+		event_tag 2 : string
+		event_target 3 : integer
+		event_source 4 : integer
+		event_channel 5 : gameplay_card_profile
+		reset_timer 6 : boolean
+		addtion_param 7 : *gameplay_generic_param
+		start_click 8 : integer
+		tip_tag 9 : string
+		avilable_action 10 : *gameplay_avilable_action
+	}
+}
+
+# 游戏你记录摸牌
+gameplay_log_draw_card 1212 {
+	request {
+		player_id 0 : integer
+		card_list 1 : *gameplay_card_profile
+		channel_id 2 : integer
+		original_draw_num 3 : integer
+	}
+}
+
+# 通知玩家投降
+gameplay_player_surrender 1213 {
+	request {
+		player_id 0 : integer
+	}
+}
+
+# 通知游戏正常结束
+gameplay_game_complete 1214 {
+	request {
+		.daily_reward_info {
+			reward_process 0 : integer #奖励对应的进度项
+			reward_copper 1 : integer #获得的铜币奖励
+			reward_gold 2 : integer #获得的金币奖励
+			reward_dust 3 : integer #获得的阴之尘奖励
+			reward_stone 4 : integer #获得的阳之石奖励
+		}
+
+		.game_player_power_item {
+			power 0 : integer
+			player_id 1 : integer
+		}
+
+		.game_turn_power_item {
+			turn_count 0 : integer #第几轮
+			power_recode 1 : *game_player_power_item #玩家战力记录
+		}
+
+		.game_complete_info {
+			start_game_time 0 : integer # 游戏开始时间	
+			game_mode 1 : integer		# 游戏模式
+			turn_power_recode 2 : *game_turn_power_item #每轮分数记录
+		}
+
+		winner_list 0 : *integer
+		daily_reward_list 1 : daily_reward_info #无奖励是为空
+		game_info 2 : game_complete_info
+	}
+}
+
+# 通知回复
+gameplay_log_recover 1215 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+		heal 2 : integer
+	}
+}
+
+# 通知使用结束
+gameplay_log_use_finish 1216 {
+	request {
+		channel 0 : gameplay_card_profile
+	}
+}
+
+
+# 通知受伤
+gameplay_log_damage 1219 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+		damage 2 : integer
+		damage_type 3 : integer
+	}
+}
+
+# 通知玩家能量增长
+gameplay_log_gain_energy 1220 {
+	request {
+		player_id 0 : integer
+		energy 1 : integer
+	}
+}
+
+# 通知精彩回放开始
+gameplay_notify_show_time_start 1221 {
+	request {
+		show_time_player 0 : integer
+		is_best_showtime 1 : boolean # true为精彩时刻，false为尴尬时刻
+	}
+}
+
+# 通知精彩回放结束
+gameplay_notify_show_time_end 1222 {
+	request {
+		show_time_player 0 : integer
+	}
+}
+
+# 牌效果发动通知
+gameplay_log_card_preform 1223 {
+	request {
+		channel 0 : gameplay_card_profile
+	}
+}
+
+# 通知回合结束
+gameplay_log_endround 1224 {
+	request {
+		player_id 0 : integer
+	}
+}
+
+# 通知回合开始
+gameplay_log_startround 1225 {
+	request {
+		player_id 0 : integer # 玩家ID
+		round_count 1 : integer # 回合计数
+		fatigue 2 : boolean # 当前回合是否疲劳
+	}
+}
+
+# 通知使用牌
+gameplay_log_use_card 1226 {
+	request {
+		source_player_id 0 : integer
+		channel 1 : gameplay_card_profile
+		target_list 2 : *integer
+	}
+}
+
+# 通知精灵死亡
+gameplay_log_pokemon_death 1227 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+# 通知BUFF触发
+gameplay_log_buff_affect 1228 {
+	request {
+		pokemon_id 0 : integer
+		buff_data 1 : gameplay_pokemon_buff_profile
+	}
+}
+
+#通知弃牌
+gameplay_log_discard_card 1229 {
+	request {
+		player_id 0 : integer
+		channel 1 : gameplay_card_profile
+	}
+}
+
+#通知冰冷
+gameplay_log_chill 1230 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+#通知延迟
+gameplay_log_delay 1231 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+#通知枯萎
+gameplay_log_withered 1232 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+#通知流失
+gameplay_log_lost 1233 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+#通知净化
+gameplay_log_purify 1234 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+#通知驱散
+gameplay_log_dispel 1235 {
+	request {
+		target_id 0 : integer
+		source_id 1 : integer
+	}
+}
+
+gameplay_log_add_buff 1236 {
+	request {
+		pokemon_id 0 : integer
+		buff_list 1 : *gameplay_pokemon_buff_profile
+	}
+}
+
+gameplay_log_remove_buff 1237 {
+	request {
+		pokemon_id 0 : integer
+		buff_list 1 : *gameplay_pokemon_buff_profile
+	}
+}
+
+# 社交系统协议端（1301-1320）
+# 通知添加好友
+relation_add_new_friend 1301 {
+	request {
+		.sync_info {
+			player_id 0 : integer
+ 			player_name 1 : string
+ 			status 2 : string
+ 			status_start_time 3 : integer
+		}
+		
+		friend_info 0 : sync_info
+	}
+}
+
+# 刷新好友邀请列表
+relation_refresh_friend_req_list 1302 {
+	request {
+		req_list 0 : *relation_friend_req_info
+	}
+}
+
+# 初始化好友列表
+relation_init_friend_info 1303 {
+	request {
+		.relation_player_info {
+			player_id 0 : integer
+			status 1 : string
+			status_start_time 2 : integer
+			game_exp 4 : integer
+	 		vip 5 : integer
+		}
+
+		.relation_friend_detail_info {
+			player_id 0 : integer
+			player_name 1 : string
+			status 2 : string 
+			status_start_time 3 : integer
+			game_exp 4 : integer
+	 		vip 5 : integer
+		}
+
+		player_info 0 : relation_player_info
+		friend_info 1 : *relation_friend_detail_info
+		req_info 2 : *relation_friend_req_info
+	}
+}
+
+# 更新好友状态
+relation_update_player_friend_status 1304 {
+	request {
+		.sync_info {
+			player_id 0 : integer
+	 		player_name 1 : string
+	 		status 2 : string
+	 		status_start_time 3 : integer
+	 		game_exp 4 : integer
+	 		vip 5 : integer
+		}
+
+		friend_sync_info 0 : sync_info
+	}
+}
+
+relation_del_friend 1305 {
+	request {
+		.del_info_set {
+			player_id 0 : integer
+		}
+
+		del_info 0 : del_info_set
+	}
+}
+
+# 邀请加入游戏通知
+relation_invite_join_req 1306 {
+	request {
+		invite_id 0 : integer
+		player_name 1 : string
+		timeout 2 : integer
+	}
+}
+
+# 邀请被拒绝通知
+relation_player_refuse_invite 1307 {
+	request {
+		refuse_id 0 : integer
+		player_name 1 : string
+	}
+}
+
+# 通知邀请删除
+relation_friend_invite_join_game_del 1308 {
+	request {
+		player_id 0 : integer
+	}
+}
+
+# 匹配系统 (1321 - 1330)
+# 通知进入匹配队列
+matchmaking_normal_enter_match_queue 1321 {}
+
+# 通知匹配确认
+matchmaking_normal_require_confirm_match 1322 {
+	request {
+		start_time 0 : integer
+		timeout 1 : integer
+	}
+}
+
+# 通知玩家确认状态
+matchmaking_normal_notify_match_status 1323 {
+	request {
+		.match_status {
+			player_id 0 : integer
+			confirmed 1 : boolean
+		}
+
+		info 0 : *match_status
+	}
+}
+
+# 通知取消匹配确认
+matchmaking_normal_cancel_confirm_match 1324 {}
+
+# 通知离开匹配队列
+matchmaking_normal_leave_match_queue 1325 {}
+
+# 通知随机事件发生
+matchmaking_normal_event_active 1326 {
+	request {
+		reward 0 : *item_info
+		next_reward_time 1 : integer
+		remain_time 2 : integer
+	}
+}
+
+# 商店模块 （1331 - 1350）
+# 通知打开牌组直接获得的牌
+shop_notify_open_package_card 1331 {
+	request {
+		card_list 0: *integer # card_tag 数组
+	}
+}
+
+# 要求客户端进行3选一选牌
+shop_require_select_package_card 1332 {
+	request {
+		card_list 0: *integer # card_tag 数组
+	}
+}
+
+# 商店通知卡包价格
+shop_notify_card_package_price 1333 {
+	request {
+		.discount_item {
+			money_type 0 : integer # 折扣对应的货币种类
+			buy_count 1 : integer # 折扣对应的购买次数
+			discount 2 : integer # 1 - 100整数，折扣率
+		}
+
+		card_package_copper_price 0 : integer # 卡包铜币价格
+		card_package_gold_price 1 : integer # 卡包金币价格
+		discount_list 2 : *discount_item #折扣列表
+	}
+}
+
+shop_notify_vip_price 1334 {
+	request {
+		vip_price 0 : integer
+	}
+}
+
+shop_notify_shop_normal_item_info 1335 {
+	request {
+		.shop_item_info {
+			shop_item_id 0 : integer
+			max_buy_count 1 : integer
+			min_buy_count 2 : integer
+			gold_price 3 : integer
+			copper_price 4 : integer
+			start_time 5 : integer
+			end_time 6 : integer
+			item_content 7 : *system_item_info
+			discount 8 : integer
+		}
+
+		info 0 : *shop_item_info
+	}
+}
+
+# 排位模式 (1351-1360)
+# 通知进入匹配队列
+matchmaking_ranked_enter_match_queue 1351 {}
+
+matchmaking_ranked_require_confirm_match 1352 {
+	request {
+		start_time 0 : integer
+		timeout 1 : integer
+	}
+}
+
+# 通知玩家确认状态
+matchmaking_ranked_notify_match_status 1353 {
+	request {
+		.match_status {
+			player_id 0 : integer
+			confirmed 1 : boolean
+		}
+
+		info 0 : *match_status
+	}
+}
+
+# 通知取消匹配确认
+matchmaking_ranked_cancel_confirm_match 1354 {}
+
+# 通知离开匹配队列
+matchmaking_ranked_leave_match_queue 1355 {}
+
+# 通知排位赛赛季重置及获得奖励
+matchmaking_notify_ranked_game_reward 1356 {
+	request {
+		reward_card_tag 0 : integer
+		reward_card_package_type 1 : integer
+		reward_card_package_num 2 : integer
+		highest_ranked_mark 3 : integer
+	}
+}
+
+# 通知排位赛体力重置
+matchmaking_notify_ranked_game_reset_energy 1357 {}
+
+# 竞技场模式 (1361 - 1370)
+# 通知进入匹配队列
+matchmaking_tournament_enter_match_queue 1361 {}
+
+# 通知匹配确认
+matchmaking_tournament_require_confirm_match 1362 {
+	request {
+		start_time 0 : integer
+		timeout 1 : integer
+	}
+}
+
+# 通知玩家确认状态
+matchmaking_tournament_notify_match_status 1363 {
+	request {
+		.match_status {
+			player_id 0 : integer
+			confirmed 1 : boolean
+		}
+
+		info 0 : *match_status
+	}
+}
+
+# 通知取消匹配确认
+matchmaking_tournament_cancel_confirm_match 1364 {}
+
+# 通知离开匹配队列
+matchmaking_tournament_leave_match_queue 1365 {}
+
+# 消息系统 (1371 - 1375)
+msgserver_sync_message 1371 {
+	request {
+		recv_id 0 : integer #接受人玩家ID
+		content 1 : string #内容
+		channel 2 : integer #发言渠道 好友：1，世界： 2
+		send_id 3 : integer #发送人玩家ID
+		send_name 4 : string #发送人名字
+		send_time 5 : integer #发送时间
+		send_game_exp 6 : integer #玩家经验
+		send_vip 7 : integer
+	}
+}
+
+#系统消息广播
+msgserver_sync_system_message 1372 {
+	request {
+		.sys_msg_param_info {
+			card_tag 0 : integer	
+			shu 1 : integer		# 蜀国 占领城池数量
+			wei 2 : integer		# 魏国 占领城池数量
+			wu 3 : integer		# 吴国 占领城池数量
+			time 4 : integer	# 刷新时间
+		}
+
+		system_message_tag 0 : integer #系统广播类型
+		system_message_targe_name 1 : string #广播消息来源的名字
+		system_message_param 2 : sys_msg_param_info
+	}
+}
+
+#单人模式(1376-1380)
+#单人模式评价通知
+mission_notify_complete_rank 1376 {
+	request {
+		level_tag 0 : integer
+		rank 1 : integer
+	}
+}
+
+# 特训通知奖励
+train_notify_complete_reward 1377 {
+	request {
+		reward_item_list 0 : *item_info
+	}
+}
+
+# 训练场通知奖励
+practice_notify_complete_reward 1378 {
+	request {
+		reward_item_list 0 : *item_info
+	}
+}
+
+#新手训练营完成通知
+beginner_notify_complete_rank 1379 {
+	request {
+		beginner_level_tag 0 : integer
+		rank 1 : integer
+	}
+}
+
+#冒险模式 (1381-1385)
+adventure_notify_event_reward 1381 {
+	request {
+		.event_reward_info {
+			reward_strength 0 : integer #事件奖励的精力
+			reward_power 1 : integer #事件奖励的能量
+			reward_score 2 : integer #事件奖励的分数
+			active_transport 3 : *string
+		}
+
+		event_reward 0 : event_reward_info
+		travel_result 1 : event_reward_info
+		event_id 2 : integer
+		travel_active 3 : boolean #当前冒险模式顺序谜题是否激活
+	}
+}
+
+#通知匹配奖励
+adventure_notify_match_reward 1382 {
+	request {
+		.mission_info {
+			mission_tag 0 : string
+			mission_progress 1 : integer
+			mission_goal 2 : integer
+		}
+
+		# 冒险模式状态刷新
+		.update_status_info {
+			adventure_matched_count 0 : integer #匹配次数
+        	adventure_matched_win_count 1 : integer #匹配胜利次数
+        	adventure_total_defeat 2 : integer #总击杀
+        	adventure_season_metched_count 3 : integer #赛季总匹配次数
+        	adventure_season_metched_win_count 4 : integer #赛季总胜利次数
+        	remain_shop_num 5 : integer #剩余商店积分领取次数
+        	total_shop_score 6 : integer #奖励商店积分
+        	proportion_list 7 : *adventure_proportion
+        	continue_win_num 8 : integer
+        	continue_lost_num 9 : integer
+        	matchmaking_total_score 10 : integer
+        	reward_exp 11 : integer
+        	target_propertion 12 : string #奖励倍率
+        	daily_first_win_reward_status 13 : integer #每日首胜奖励状态，状态见 system_notify_player_base_info 描述
+		}
+
+		.pokeball_status_info {
+			reward_pokemon_tag 0 : integer
+    		reward_pokemon_rank 1 : integer
+    		pokeball_reward_status 2 : integer # 1:直接领取; 2:替换低级箱子; 3:丢弃箱子
+		}
+
+		reward_item 0 : *system_item_info
+		update_mission 1 : *mission_info #更新任务状态
+		update_status 2 : update_status_info #状态更新
+		pokeball_status 3 : pokeball_status_info
+	}
+}
+
+adventure_update_season_info 1383 {
+	request {
+		.adventure_season_info {
+			season_id 0 : integer
+			server_start_day 1 : integer
+			finish_time 2 : integer
+			reward_set 3 : integer
+			start_time 4 : integer
+		}
+
+		season_info 0 : adventure_season_info
+	}
+}
+
+#玩家通用服务(1386-1390)
+#通知新觉醒任务发生
+general_notify_new_quest 1386 {
+	request {
+		quest 0 : awake_quest_info
+	}
+}
+
+#通知觉醒任务更新
+general_notify_update_quest 1387 {
+	request {
+		quest_list 0 : *awake_quest_info
+	}
+}
+
+# 通知研究槽变化
+general_notify_research_solt_update 1388 {
+	request {
+		update_list 0 : *research_solt_info
+	}
+}
+
+# 任务 && 成就 (1390+)
+task_notify_achievement_update 1391 {
+	request {
+		achievement_list 0 : *achievement_info
+	}
+}
+
+task_notify_daily_mission 1392 {
+	request {
+		daily_mission_list 0 : *daily_mission_info
+	}
+}
+
+task_notify_active_task_update 1393 {
+	request {
+		active_task 0 : *active_task_info
+	}
+}

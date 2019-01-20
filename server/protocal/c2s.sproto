@@ -1,0 +1,1594 @@
+.package {
+	type 0 : integer
+	session 1 : integer
+}
+
+# 系统个人牌库定义
+.system_card_set_item {
+	card_tag 0: integer
+	num 1 : integer
+}
+
+.system_card_set {
+    leader 0 : *system_card_set_item
+    other 1 : *system_card_set_item
+    default_leader 2 : integer
+    card_set_name 3 : string
+}
+
+.card_package_num_info {
+	package_type 0 : integer # 参考const/card_random_weight.lua中卡包类型标识
+	num 1 : integer
+}
+
+.reward_info {
+	reward_tag 0 : string
+	dust 1 : integer
+	stone 2 : integer
+	copper 3 : integer
+	gold 4 : integer
+	card_package 5 : *card_package_num_info
+}
+
+.item_info {
+	item_tag 0 : integer
+	item_count 1 : integer
+}
+
+.global_price {
+	copper_price 0 : integer
+	gold_price 1 : integer
+}
+
+.damage_info {
+	damage_type 0 : integer
+	damage 1 : integer
+}
+
+.pokemon_skill_info {
+	skill_type 0 : integer #技能类型
+	rarity 1 : integer #技能稀有度
+	enery_cost 2 : integer #技能能量消耗
+	sp_cost 3 : integer #技能怒气消耗
+	dmg_list 4 : *damage_info #技能造成的伤害
+	sputtering_dmg_list 5 : *damage_info #技能造成的溅射伤害
+	heal 6 : integer #技能回复量
+	recover 7 : integer #技能恢复BUFF恢复量
+	dmg_modify 8 : *damage_info #技能的伤害修正值
+	cost_modify 9 : integer #技能的费用修正
+	max_hp_modify 10 : integer #技能最大生命修正
+	heal_modify 11 : integer #技能回复修正
+	armor_modify 12 : integer #技能护甲修正
+	dmg_extra_list 13 : *damage_info #技能额外伤害列表
+	kill_hp 14 : integer #技能斩杀HP
+	dmg_modify_per_status 15 : *damage_info
+	random_dmg_max 16 : *damage_info #技能随机伤害最大值
+	random_dmg_min 17 : *damage_info #技能随机伤害最小值
+	skill_tag 18 : integer
+}
+.pokemon_preset_info {
+	   pokemon_tag 0 : integer
+       pokemon_hp 1 : integer
+       pokemon_rank 2 : integer
+       skill_info 3 : *pokemon_skill_info
+   }
+
+.research_solt_info {
+	solt_index 0 : integer
+    poke_ball_tag 1 : integer
+    poke_ball_rank 2 : integer
+    research_finish_time 3 : integer
+}
+
+.research_reward_info {
+	rarity 0 : integer
+	reward_item 1 : *item_info
+}
+
+.adventure_shop_item {
+	item_tag 0 : integer 
+	item_count 1 : integer
+	score_price 2 : integer
+	available_buy_count 3 : integer 
+	discount 4 : integer
+	item_id 5 : integer
+}
+
+# 对时协议
+sync_time 1 {
+	request {
+		local_time 0 : integer
+	}
+	
+	response {
+		logic_time 0 : integer
+		local_time 1 : integer
+	}
+}
+
+ack_hb 2 {}
+
+#远程终端处理指令
+remote_console_process_cmd 3 {
+	request {
+		cmd 0 : string
+		args 1 : string
+	}
+
+	response {
+		result 0 : boolean
+		data 1 : string
+	}
+}
+
+#获取远程终端命令
+remote_console_get_cmd_list 4 {
+	response {
+		result 0 : boolean
+		cmd_list 1 : *string
+	}
+}
+
+# 系统协议段(101-199)
+
+# 登陆
+system_login 101 {
+	request {
+		version 0 : string
+		account_id 1 : string
+		uid 2 : string
+		device_identify 3 : string
+		platform 4 : string
+		channel 5 : string
+	}
+
+	response {
+		result 0 : integer
+		in_battle 1 : boolean
+	}
+}
+
+# 新增个人牌库
+system_add_personal_card_set 102 {
+	request {
+		card_set_info 0 : system_card_set
+	}
+
+	response {
+		result 0 : boolean
+		error_code 1 : integer #成功: 1, 牌组不合法: -1, 牌组超过上限: -4, 操作非法: -3, 牌組名包含屏蔽詞 : -5
+	}
+}
+
+# 删除个人牌库
+system_remove_personal_card_set 103 {
+	request {
+		card_set_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 更新个人牌库
+system_update_personal_card_set 104 {
+	request {
+		card_set_info 0 : system_card_set
+		card_set_id 1 : integer
+	}
+
+	response {
+		result 0 : boolean
+		error_code 1 : integer #成功: 1, 牌组不合法: -1, 牌组不存在: -2, 操作非法: -3, 牌組名包含屏蔽詞 : -5
+	}
+}
+
+# 合成卡牌
+system_compose_card 105 {
+	request {
+		card_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 分解卡牌
+system_decompose_card 106 {
+	request {
+		.decompose_item {
+			card_tag 0 : integer
+			num 1 : integer
+		}
+		
+		decompose_info 0 : *decompose_item
+	}
+
+	response {
+		result 0 : boolean
+		stone 1 : integer
+		dust 2 : integer
+	}
+}
+
+# 获得test道具
+system_get_test_item 107 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 玩家删除邮件
+system_remove_mail 108 {
+	request {
+		mail_id_list 0 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 玩家阅读指定邮件
+system_read_player_mail 109 {
+	request {
+		mail_id 0 : integer
+	}
+
+	response {
+		.mail_item_info {
+			item_tag 0 : integer
+			num 1 : integer 
+		}
+		result 0 : boolean
+		reward_list 1 : *mail_item_info
+	}
+}
+
+# 签到
+system_earn_sign_reward 110 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 更新玩家名字
+system_update_player_name 111 {
+	request {
+		player_name 0 : string
+	}
+
+	response {
+		result 0 : integer #-1:未知错误， -2： 重名 -3：有敏感词 1:正常
+	}
+}
+
+system_token_login 112 {
+	request {
+		version 0 : string
+		token 1 : string
+		device_identify 2 : string
+		platform 3 : string
+		channel 4 : string
+	}
+
+	response {
+		result 0 : integer
+		in_battle 1 : boolean
+	}
+}
+
+# 领取总签到奖励
+system_earn_total_sign_reward 113 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 领取自动宝箱
+system_earn_auto_reward_box 114 {
+	response {
+		result 0 : boolean
+	}
+}
+
+system_read_all_player_mail 115 {
+	response {
+		result 0 : boolean
+	}
+}
+
+system_fetch_player_overview_info 116 {
+	request {
+		player_id 0 : integer
+	}
+
+	response {
+		.overview_pokemon_info {
+			pokemon_tag 0 : integer
+        	pokemon_awake 1 : integer
+        	pokemon_strength 2 : integer
+        	pokemon_power 3 : integer
+        	pokemon_rank 4 : integer
+		}
+
+		.player_overview_info {
+			adventure_matched_count 0 : integer
+        	adventure_matched_win_count 1 : integer
+        	adventure_prefet_count 2 : integer
+        	adventure_total_defeat 3 : integer
+        	player_skin_tag 4 : integer
+        	name 5 : string
+        	game_exp 6 : integer
+        	vip 7 : integer
+        	task_achievement_score 8 : integer
+        	matchmaking_total_score 9 : integer
+        	best_pokmeon_info 10 : overview_pokemon_info
+		}
+
+		result 0 : boolean
+		overview_info 1 : player_overview_info
+	}
+}
+
+# 通知观看录像
+system_notify_watch_playback 117 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 游戏内协议（201-300)
+gameplay_standby 201 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 更换起始手牌
+gameplay_change_init_card 202 {
+	request {
+		card_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		error_code 1 : integer # 0: 正常 -1: 对象或时机错误(自有客户端不可能出现)
+	}
+}
+
+# 选择领主
+gameplay_select_leader 203 {
+	request {
+		card_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		error_code 1 : integer # 0: 正常 -1: 对象或时机错误(自有客户端不可能出现)
+	}
+}
+
+# 使用一张牌
+gameplay_use_card 204 {
+	request {
+		card_id 0 : integer
+		target_list 1 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 游戏继续下一步
+gameplay_continue 205 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 确认起始手牌
+gameplay_confirm_init_card 206 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 给牌指定目标
+gameplay_assgin_card_position 207 {
+	request {
+		position 0 : integer
+		row 1 : integer
+		side_player 2 : integer
+	}
+	
+	response {
+		result 0 : boolean
+	}
+}
+
+# 玩家选择牌
+gameplay_select_card 208 {
+	request {
+		card_id_list 0 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 玩家投降
+gameplay_surrender 209 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 选择一行
+gameplay_select_row 210 {
+	request {
+		.row_target {
+			side_id 0 : integer
+			row 1 : integer
+		}
+		
+		select_row 0 : *row_target
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 直接胜利当前游戏
+gameplayer_win_current_game 211 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 社交系统协议端 (301-320)
+# 玩家搜索
+relation_search_player 301 {
+	request {
+		target_label 0 : string  #搜索KEY，可以是ID或名字
+	}
+
+	response {
+		result 0 : integer # -2 已经是好友; -1 已经是好友; 1 正常
+		target_name 1 : string
+		target_id 2 : integer
+	}
+}
+
+#添加好友（发送邀请）
+relation_add_friend 302 {
+	request {
+		target_label 0 : string  #搜索KEY，可以是ID或名字
+	}
+
+	response {
+		result 0 : integer # -2 已经是好友; -1 已经是好友; 1 正常
+	}
+}
+
+# 确认好友邀请
+relation_add_friend_confirm 303 {
+	request {
+		req_id 0 : integer # 请求的玩家ID
+	}
+
+	response {
+		result 0 : integer # -1 已经是好友; 1 正常
+	}
+}
+
+# 拒绝好友邀请
+relation_add_friend_refuse 304 {
+	request {
+		req_id 0 : integer # 请求的玩家ID
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 删除好友
+relation_del_friend 305 {
+	request {
+		target_id 0 : integer
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 邀请玩家加入游戏
+relation_invate_friend_for_game 306 {
+	request {
+		target_id 0 : integer
+		card_set_id 1 : integer
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 确认加入游戏
+relation_invite_join_req_confirm 307 {
+	request {
+		invite_id 0 : integer
+	 	card_set_id 1 : integer
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 拒绝加入游戏
+relation_invite_join_req_refuse 308 {
+	request {
+		invite_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 取消对战邀请
+relation_invite_join_req_cancel 309 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 外部邀请进入游戏
+relation_extend_invate_game 310 {
+	request {
+		target_id 0 : integer
+		card_set_id 1 : integer
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 确认外部邀请进入游戏
+relation_extend_invite_join_confirm 311 {
+	request {
+		invite_id 0 : integer
+	 	card_set_id 1 : integer
+	}
+
+	response {
+		result 0 : integer
+	}
+}
+
+# 清楚外部邀请
+relation_extend_clean_invition 312 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 匹配系统协议端 (321 - 330)
+# 开始匹配
+matchmaking_normal_begin_match 321 {
+	request {
+		pokemon_preset 0 : *pokemon_preset_info
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 离开匹配
+matchmaking_normal_leave_match 322 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 同意匹配确认
+matchmaking_normal_confim_agree 323 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 拒绝匹配确认
+matchmaking_normal_confim_reject 324 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 商店模块 （330 - 350）
+# 购买普通精灵球
+shop_buy_pokeball 331 {
+	request {
+		pokeball_rank 0 : integer #稀有度
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *research_reward_info
+	}
+}
+
+# 购买轮转精灵球
+shop_buy_rotate_pokemon_ball 332 {
+	request {
+		pokeball_rank 0 : integer #稀有度
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *research_reward_info
+	}
+}
+
+# 购买活动精灵球
+shop_buy_active_pokeball 333 {
+	request {
+		buy_num 0 : integer #购买数量
+		pokeball_tag 1 : integer #活动精灵球TAG
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *research_reward_info
+	}
+}
+
+
+#商店购买
+shop_buy_normal_item 335 {
+	request {
+		shop_item_id 0 : integer
+		money_type 1 : integer
+		num 2 : integer
+	}
+
+	response {
+		result 0 : integer # -1:ID不正确， -2：数量不合法 ，-3：货币不足， 1：一切正常
+	}
+}
+
+# 获取道具特卖列表
+fetch_shop_item_specail 336 {
+	response {
+		.shop_special_item_info {
+			special_item_id 0 : integer #ID
+			reward_item 1 : *item_info #获得的道具
+			cost_item 2 : *item_info #消耗的道具
+			discount 3 : string #折扣
+			remain 4 : integer #剩余次数
+		}
+		shop_item_specail 0 : *shop_special_item_info
+	}
+}
+
+# 购买道具特卖
+buy_shop_item_specail 337 {
+	request {
+		special_item_id 0 : integer #ID
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+shop_fetch_shop_active_pokeball 338 {
+	response {
+		.active_pokeball_info {
+			active_pokeball_tag 0 : integer
+			start_time 1 : integer
+			end_time 2 : integer
+		}
+		active_pokeball 0 : *active_pokeball_info
+	}
+}
+
+fetch_shop_discount_item 339 {
+	response {
+		.shop_discount_item {
+			shop_item_tag 0 : integer # 标识符
+			available_start_time 1 : integer #开始时间 -1标识无穷
+			available_end_time 2 : integer #结算时间 -1标识无穷
+			item_reward 3 : *item_info #奖励道具列表
+			item_gold_price 4 : integer #购买用钻石价格（打折前)
+			discount 5 : integer #打折(百分比),例如：90表示实际购买价格为上述价格的90%
+			daily_remain_count 6 : integer #每日剩余购买次数
+			week_remain_count 7 : integer #每周剩余购买次数
+			player_remain_count 8 : integer #玩家剩余购买次数
+		}
+
+		shop_special_sale_item 0 : *shop_discount_item
+	}
+}
+
+#购买商店折扣商品
+buy_shop_discount_item 340 {
+	request {
+		shop_item_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 任务系统 (351-360)
+# 获得任务每日奖励
+task_earn_daily_mission_reward 351 {
+	request {
+		daily_mission_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *item_info
+	}
+}
+
+# 领取成就奖励
+task_earn_achievement_reward 352 {
+	request {
+		achievement_tag 0 : integer
+		difficulty_tag 1 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+task_earn_daily_active_reward 353 {
+	request {
+		active_reward_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *item_info
+		vip_reward 2 : *item_info
+	}
+}
+
+refrash_daily_mission 354 {
+	response {
+		result 0 : boolean
+	}
+}
+
+task_earn_achievement_level_reward 355 {
+	response {
+		result 0 : boolean
+		reward_item 1 : *item_info
+	}
+}
+
+# 领取活动任务奖励
+task_earn_active_task_reward 356 {
+	request {
+		active_task_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 竞技场模式（361-370）
+matchmaking_tournament_begin_match 361 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_leave_match 362 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_confim_agree 363 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_confim_reject 364 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 开始一局竞技场游戏
+matchmaking_tournament_start_game 365 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_random_next_card 367 {
+	response {
+		.select_info {
+			.card_set_info {
+				info 0 : *integer
+			}
+			select_leader 0 : boolean
+        	select_card_set 1 : *card_set_info
+		}
+
+		result 0 : boolean
+		random_info 1 : select_info
+	}
+}
+
+matchmaking_tournament_accept_selection 368 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_giveup_game 369 {
+	response {
+		result 0 : boolean
+	}
+}
+
+matchmaking_tournament_earn_reward 370 {
+	response {
+		.tournament_reward_info {
+			card_package_type 0 : integer
+			dust 1 : integer
+			copper 2 : integer
+			card_tag 3 : integer
+		}
+		result 0 : boolean
+		reward_info 1 : tournament_reward_info
+	}
+}
+
+#排位赛通信组 (371-380)
+# 开始匹配
+matchmaking_ranked_begin_match 371 {
+	request {
+		card_set_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 离开匹配
+matchmaking_ranked_leave_match 372 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 同意匹配确认
+matchmaking_ranked_confim_agree 373 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 拒绝匹配确认
+matchmaking_ranked_confim_reject 374 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 排位赛按时战力增加
+matchmaking_auto_increase_energy 375 {
+	response {
+		.ranking_table_item {
+			ranked 0 : integer
+			mark 1 : integer
+			name 2 : string
+		}
+
+		result 0 : boolean
+		energy 1 : integer
+		increase_time 2 : integer #下一次增加一点的时刻
+		ranking_table 3 : *ranking_table_item #当前排名表
+	}
+}
+
+#消息系统 (381 - 385)
+msgserver_send_message_req 381 {
+	request {
+		.message_info {
+			recv_id 0 : integer
+			content 1 : string
+			channel 2 : integer
+		}
+		message 0 : message_info
+	}
+	response {
+		result 0 : integer # -1:未知错误 -4:被禁言 -3:等级不足 -2:CD未到
+	}
+}
+
+#战役 (386-390)
+# 开启一局单人模式
+mission_start_solo_game 387 {
+	request {
+		level 0 : integer
+		pokemon_list 1 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 领取单人模式通关奖励
+mission_earn_mission_clear_reward 388 {
+	request {
+		level 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 领取单人模式完美奖励
+mission_earn_mission_prefect_reward 389 {
+	request {
+		level 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 领取单人模式普通奖励
+mission_earn_mission_normal_reward 390 {
+	request {
+		level 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 解锁新联盟
+mission_unlock_mission_legue 386 {
+	request {
+		legue_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+
+
+#支付(391-395)
+# 请求支付
+payment_request_start 391 {
+	request {
+		payment_channel 0 : string
+		payment_platform 1 : string
+		payment_id 2 : integer
+	}
+
+	response {
+		payment_info 0 : string #json打包的支付详细数据（和支付渠道有关）
+		result 1 : boolean
+		payment_no 2 : string
+	}
+}
+
+# 获取支付状态
+fetch_payment_request_status 392 {
+	request {
+		payment_no 0 : string
+	}
+
+	response {
+		result 0 : boolean
+		status 1: string
+	}
+}
+
+# 客户端完成订单
+client_complete_order 393 {
+	request {
+		payment_no 0 : string
+		information 1 : string
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+payment_earn_first_payment_pokemon_reward 394 {
+	response {
+		result 0 : boolean
+		reward_item 1 : *item_info
+	}
+}
+
+# 新手系统 (395-400)
+
+guide_set_guide_enable 395 {
+	request {
+		guide_enable 0 : boolean
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+guide_set_guide_all_finished 396 {
+	request {
+		guide_all_finished 0 : boolean
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+guide_set_guide_index 397 {
+	request {
+		guide_index 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+guide_set_guild_battle_level 398 {
+	request {
+		guide_battle_level 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 400 - 500 (冒险模式)
+
+adventure_begin_match 401 {
+	request {
+		pokemon_list 0 : *integer
+		area_id 1 : integer #场地ID
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+adventure_active_event 402 {
+	request {
+		.player_position {
+			x 0 : string
+			y 1 : string
+			z 2 : string
+		}
+
+		event_id 0 : integer
+		strength_modify 1 : integer
+		pokemon_list 2 : *integer
+		position 3 : player_position
+	}
+
+	response {
+		.qustion_info {
+			question_tag 0 : integer #问题TAG
+			choice_tag 1 : *integer #选项TAG
+		}
+
+		result 0 : boolean
+		qustion_data 1 : qustion_info
+	}
+}
+
+adventure_start_game 403 {
+	request {
+		map_tag 0 : integer #地图TAG
+	}
+
+	response {
+		.power_reward {
+			reward_id 0 : integer #奖励ID
+			reward_tag 1 : integer #奖励类型标识TAG
+		}
+
+		.event_info {
+			event_tag 0 : integer #事件类型
+			event_id 1 : integer #事件ID
+			event_position 2 : string #位置标识
+			event_patrol 3 : string #巡逻路径标识
+			event_type 4 : integer #事件类型
+		}
+
+		.transport_info {
+			transport_tag 0 : string #传送门标识
+			active 1 : boolean
+		}
+
+		.adventure_mission_info {
+			mission_tag 0 : string # 任务标识
+			mission_progress 1 : integer # 进度
+			mission_goal 2 : integer #目标
+		}
+
+		result 0 : boolean
+		map_id 1 : integer #地图ID
+		map_tag 2 : integer #地图类型标识
+		random_reward_num 3 : integer #随机奖励数量（PVP战斗次数）
+		power_reward_list 4 : *power_reward #能量奖励列表
+		max_strength 5 : integer #最大精力(当前段)
+		adventure_event_list 6 : *event_info #事件列表
+		adventure_max_power 7 : integer #最大精力
+		adventure_transport 8 : *transport_info
+		adventure_mission 9 : *adventure_mission_info
+	}
+}
+
+adventure_complete_game 404 {
+	response {
+		.complete_reward_info {
+			item_tag 0 : integer
+			item_count 1 : integer
+			rank 2 : integer
+		}
+
+		#冒险模式状态更新
+		.complete_status_info {
+            adventure_total_score 0 : integer #总分记录（总星星）
+            adventure_prefet_count 1 : integer #3星记录
+		}
+
+		result 0 : boolean
+		rank 1 : integer #最终评价
+		finial_reward 2 : *complete_reward_info
+		update_status 3 : complete_status_info
+	}
+}
+
+#adventure_earn_finial_reward 405 {
+#	response {
+#		result 0 : boolean
+#		item_tag 1 : integer #奖励道具ID
+#		item_count 2 : integer #奖励道具数量
+#		random_finial_reward_price 3 : global_price
+#	}
+#}
+
+adventure_answer_question 406 {
+	request {
+		choice_tag 0 : integer #选择的tag
+	}
+
+	response {
+		result 0 : boolean
+		qustion_success 1 : boolean
+	}
+}
+
+adventure_buy_strength 407 { #购买体力
+	response {
+		result 0 : boolean
+	}
+}
+
+#获取预计匹配时间
+adventure_get_predict_match_time 408 {
+	response {
+		result 0 : boolean
+		predict_time 1 : integer # 预计匹配时间，单位是秒(-1表示不知道)
+	}
+}
+
+# 领取排位赛赛季奖励
+adventure_earn_season_reward 409 {
+	response {
+		result 0 : boolean
+		reward_item 1 : *item_info
+	}
+}
+
+# 排位赛购买奖励次数
+adventure_buy_proportion_count 410 {
+	response {
+		result 0 : boolean
+	}
+}
+
+# 排位赛领取每日首胜奖励
+adventure_earn_first_win_reward 411 {
+	response {
+		result 0 : boolean
+		reward_item 1 : *item_info
+	}
+}
+
+adventure_fetch_shop_item 412 {
+	response {
+		result 0 : boolean
+		shop_items 1 : *adventure_shop_item
+	}
+}
+
+adventure_force_refrash_shop_item 413 {
+	response {
+		result 0 : boolean
+		shop_items 1 : *adventure_shop_item
+	}
+}
+
+adventure_buy_shop_item 414 {
+	request {
+		item_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#玩家操作通用服务(500-600)
+general_upgrade_pokemon_skill 501 { #升级精灵技能
+	request {
+		pokemon_tag 0 : integer
+		skill_tag 1 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+general_break_pokemon_skill 502 { #突破精灵技能等级
+	request {
+		pokemon_tag 0 : integer
+		skill_tag 1 : integer
+	}
+
+	response {
+		result 0 : boolean
+		skill_max_level 1 : integer
+	}
+}
+
+general_upgrade_pokemon_strength 503 { #精灵强化
+	request {
+		pokemon_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+general_equip_pokemon_equipment 504 { #装备精灵装备
+	request {
+		pokemon_tag 0 : integer
+		index 1 : integer 
+		equip_tag 2 : integer
+		level 3 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+general_remove_pokemon_equipment 505 { #移除精灵装备
+	request {
+		pokemon_tag 0 : integer
+		index 1 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 升级精灵上的装备
+general_upgrade_pokemon_equipment 506 {
+	request {
+		pokemon_tag 0 : integer
+		index 1 : integer
+		equipment_list 2 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#升级背包里的装备
+general_upgrade_equipment_item 507 {
+	request {
+		equip_tag 0 : integer
+		equip_level 1 : integer
+		equipment_list 2 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#完成觉醒任务
+general_finish_pokemon_awake_quest 508 {
+	request {
+		quest_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#精灵觉醒
+general_awake_pokemon 509 {
+	request {
+		pokemon_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#精灵进化
+general_increase_pokemon_rank 510 {
+	request {
+		pokemon_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 刷新任务
+general_refrash_player_quest 511 {
+	response {
+		.board_quest_info {
+			.reward_slot_info {
+			 	reward_num 0 : integer
+			}
+
+			quest_id 0 : integer
+			quest_tag 1 : integer
+			quest_complete_time 2 : integer
+			quest_pokemon_tag 3 : *integer
+			reward_slot 4 : *reward_slot_info
+			quest_name 5 : string
+		}
+		result 0 : boolean
+		quest_list 1 : *board_quest_info
+	}
+}
+
+# 派遣精灵参加委托
+general_process_new_quest 512 {
+	request {
+		quest_id 0 : integer
+		pokemon_tag_list 1 : *integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 取消委托
+general_cancel_quest 513 {
+	request {
+		quest_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#领取委托奖励
+general_earn_quest_reward 514 {
+	request {
+		quest_id 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#增加当前可执行的委托数量
+general_buy_quest_max_num 515 {
+	response {
+		result 0 : boolean
+	}
+}
+
+#更改玩家skin
+general_reset_player_skin 516 {
+	response {
+		result 0 : boolean
+	}
+}
+
+general_unlock_pokemon 517 {
+	request {
+		pokemon_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+general_start_pokemon_ball_research 518 {
+	request {
+		solt_index 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+general_improve_poke_ball_rank 519 {
+	request {
+		solt_index 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+
+general_direct_earn_poke_ball_reward 520 {
+	request {
+		solt_index 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *research_reward_info
+	}
+}
+
+general_normal_earn_poke_ball_reward 521 {
+	request {
+		solt_index 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		reward 1 : *research_reward_info
+	}
+}
+
+#设置开关研究队列
+general_setup_research_queue 522 {
+	request {
+		enable_research 0 : boolean
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+
+debug_increase_pokemon_rank 523 {
+	request {
+		pokemon_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#购买游戏基金
+general_buy_gamefund 525 {
+	response {
+		result 0 : boolean
+	}
+}
+
+#领取游戏基金奖励
+general_earn_gamefun_reward 526 {
+	request {
+		target_level 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+		reward_item 1 : *item_info
+	}
+}
+
+# 特训
+train_start_solo_game 531 { #开启一场特训
+	request {
+		pokemon_tag 0 : integer #对应精灵
+		difficulty_tag 1 : integer #对应难度
+		double_enable 2 : boolean #是否启用双倍
+		pokemon_list 3 : *integer #对战精灵列表
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 训练
+practice_start_solo_game 532 {
+	request {
+		practice_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+# 开始新手训练营
+beginner_start_solo_game 533 {
+	request {
+		beginner_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#领取奖励
+beginner_earn_clear_reward 534 {
+	request {
+		beginner_tag 0 : integer
+	}
+
+	response {
+		result 0 : boolean
+	}
+}
+
+#特训购买双倍奖励
+train_buy_train_double_reward 535 {
+	response {
+		result 0 : boolean
+	}
+}

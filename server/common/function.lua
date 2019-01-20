@@ -346,7 +346,7 @@ end
 -- 设置环境变量
 function setup_env( ... )
     
-
-
+    safe_set_env("normal_watchdog_port", os.getenv("NORMAL_WATCHDOG_PORT"))
+    safe_set_env("max_client_num", os.getenv("MAX_CLIENT_NUM"))
 
 end

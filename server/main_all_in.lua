@@ -11,7 +11,7 @@ skynet.start(function()
     local const =require "server_const.const"
     skynet.error("Server Main Start!!!") 
     
-
+    skynet.error(tostring(const.ITEM_TAG));
 
 
 

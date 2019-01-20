@@ -12,7 +12,7 @@ skynet.start(function()
     
     skynet.error("Server Main Start!!!") 
     
-    skynet.error(ITEM_TAG)
+    
 
 
 

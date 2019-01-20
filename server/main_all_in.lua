@@ -28,5 +28,6 @@ skynet.start(function()
 
   
     print("Server Init Finish!", os.date("%Y%m%d", math.floor(skynet.time())))
+    skynet.exit()
 
 end)

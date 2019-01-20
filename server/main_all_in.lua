@@ -19,14 +19,8 @@ skynet.start(function()
     skynet.uniqueservice("protoloader") 
    
     
-    --watchdong 客户端连接入口
-    local watchdog = skynet.newservice("watchdog")
-    skynet.call(watchdog,"lua","start"),{
-        port = watchdog_port,
-		maxclient = max_client,
-		nodelay = true,
-    })
-    datacenter.set("server_adress","watchdog",watchdog)
-    print("Watchdong listen on ",watchdog_port)
+    -- 签到服务
+	local sign_server = skynet.newservice("signin_server")
+	datacenter.set("server_address", "signin_server", sign_server)
 
 end)

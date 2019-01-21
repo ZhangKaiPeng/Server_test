@@ -10,7 +10,7 @@ local local_nodename = skynet.getenv("cluster_nodename")
 
 skynet.start(function ()
 	-- body
-	skynet.register("lobby")
-    skynet.error("lobby server start")
+	skynet.register("cus_server_lobby")
+    skynet.error("cus_server_lobby server start")
 
 end)

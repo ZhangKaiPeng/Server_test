@@ -14,7 +14,6 @@ local max_client = 64
 skynet.start(function()
     
     skynet.error("Server Start!!!") 
-    print("Server Init Start!", os.date("%Y%m%d", math.floor(skynet.time())))
     
     --启动唯一服务(协议加载)
     skynet.uniqueservice("protoloader") 
@@ -29,11 +28,10 @@ skynet.start(function()
         nodelay = true,
     })
     skynet.error("Watchdog listen on", watchdog_port)
-    
 
     --大厅服务
     local lobby = skynet.newservice("cus_server_lobby")
-    datacenter.set("server_address", "cus_server_lobby", lobbys)
+    datacenter.set("server_address", "cus_server_lobby", lobby)
 
     -- 签到服务
 	local sign_server = skynet.newservice("cus_server_signin")

@@ -80,7 +80,6 @@ function CMD.start(conf)
 	skynet.fork(function()
 		while true do
 			send_package(send_request "heartbeat")
-			skynet.error("heartbeat")
 			skynet.sleep(500)
 		end
 	end)

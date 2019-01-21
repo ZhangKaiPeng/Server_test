@@ -35,7 +35,7 @@ skynet.start(function()
 
     -- 签到服务
 	local sign_server = skynet.newservice("cus_server_signin")
-	datacenter.set("server_address", "cus_server_lobby", sign_server)
+	datacenter.set("server_address", "cus_server_signin", sign_server)
 
   
     print("Server Init Finish!", os.date("%Y%m%d", math.floor(skynet.time())))

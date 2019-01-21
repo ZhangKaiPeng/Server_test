@@ -14,6 +14,7 @@ local max_client = 64
 skynet.start(function()
     
     skynet.error("Server Start!!!") 
+    print("Server Start!", os.date("%Y%m%d", math.floor(skynet.time())))
     
     --启动唯一服务(协议加载)
     skynet.uniqueservice("protoloader") 

@@ -55,6 +55,9 @@ function CMD.close(fd)
 end
 
 skynet.start(function()
+
+    skynet.error("server watchdog start!")
+
 	skynet.dispatch("lua", function(session, source, cmd, subcmd, ...)
 		if cmd == "socket" then
 			local f = SOCKET[subcmd]

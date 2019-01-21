@@ -1,7 +1,7 @@
 local skynet = require "skynet"
 require "skynet.manager"	-- import skynet.register
-local db = {}
 
+local db = {}
 local command = {}
 
 function command.GET(key)
